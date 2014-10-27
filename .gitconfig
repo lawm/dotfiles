@@ -1,0 +1,20 @@
+[color]
+	ui = auto
+#[user]
+#	email = 
+#	name = 
+[core]
+	editor = vi
+[diff]
+	tool = vimdiff
+[alias]
+	st = status
+	l = log --name-status
+	logn = log --name-status
+	logs = log --remotes --decorate
+	logsn = log --remotes --decorate --name-status
+	lsm = ls-files -m
+	shown = show --pretty="format:" --name-only
+	br = branch
+	co = checkout
+	fetchbr= "!f() { [ $# -ne 2 ] && { echo git fetchbr remote branch;exit 0; }; git fetch $1 $2:refs/remotes/$1/$2 ; }; f"
