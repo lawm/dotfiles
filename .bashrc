@@ -29,9 +29,11 @@ shopt -s checkwinsize
 [ -n "$DISPLAY" -a "$TERM" == "xterm" ] && export TERM=xterm-256color
 
 # set a fancy prompt (non-color, unless we know we "want" color)
-#case "$TERM" in
-#    xterm-color) color_prompt=yes;;
-#esac
+case "$TERM" in
+    xterm-color) color_prompt=yes;;
+    xterm-256color) color_prompt=yes;;
+    screen) color_prompt=yes;;
+esac
 
 #color_prompt=yes
 
@@ -50,6 +52,7 @@ PROMPT_COMMAND='echo -ne "\033]0;${USER}@${HOSTNAME%%.*}:${PWD/#$HOME/~}\007"'
 if [ -x /usr/bin/dircolors ]; then
     test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
     alias ls='ls --color=auto'
+    alias ll='ls --color=auto -lh'
     #alias dir='dir --color=auto'
     #alias vdir='vdir --color=auto'
 
@@ -85,9 +88,11 @@ fi
 
 ###
 #alias gvim='gvim --remote-silent'
-alias vimless='/usr/share/vim/vim74/macros/less.sh'
-#alias vir='vi --servername main --remote-silent'
-#alias virlist='$HOME/bin/vi --serverlist'
+if [ -f /usr/share/vim/vimcurrent/macros/less.sh ]; then
+  alias vimless='/usr/share/vim/vimcurrent/macros/less.sh'
+else
+  alias vimless='/usr/share/vim/vim[0-9][0-9]/macros/less.sh'
+fi
 alias minicom='minicom -w'
 alias qgit='git'
 alias fdn='find . -name'
@@ -112,6 +117,24 @@ function resgrep()
 # updates $DISPLAY for existing window
 function update-tmux() {
     eval export $(tmux showenv|grep ^DISPLAY=)
+    # static ssh-auth-sock not working, update it too
+    eval export $(tmux showenv|grep ^SSH_AUTH_SOCK=)
+}
+
+function cdm() {
+    if [ "$1" != "" ]; then
+        eval cd ~${1}
+        return
+    fi
+    dirs -v |tail -n +2
+    local idx
+    if [ "$1" != "" ]; then
+        idx=$1
+    else
+        read -s -n1 idx
+    fi
+    [[ "$idx" =~ [0-9] ]] &&
+        eval cd ~${idx}
 }
 
 export IGNOREEOF=10
